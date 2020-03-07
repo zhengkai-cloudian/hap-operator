@@ -1,0 +1,7 @@
+apiVersion: hap.cloudian.com/v1alpha1
+kind: HapPod
+metadata:
+  name: example-happod
+spec:
+  # Add fields here
+  size: 3
