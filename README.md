@@ -18,7 +18,7 @@ Follow the steps to install and configure the Kubernetes Cluster for HAP.
 4. ```$ kubectl cluster-info``` to confirm that cluster is running
 5. ```$ kubectl get nodes``` to confirm that nodes worker nodes have joined the cluster
 
-Note: In case you have any errors in setting up k8s cluster, you can run ```$ kubeadm reset```` to reset the master and run the master script again.  
+Note: In case you have any errors in setting up k8s cluster, you can run ```$ kubeadm reset``` to reset the master and run the master script again.  
 
 ### Setup for Operator
 
