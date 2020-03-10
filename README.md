@@ -13,6 +13,34 @@ site, change into the Cloudian_HyperStore directory and then into the cloudian-7
 
 To install and run HyperStore software you need a HyperStore license file - either an evaluation license or a production license.
 
+## Host Hardware and OS Requirements
+
+### Recommended for Production system:
+
+* 1 CPU, 8 cores
+* 128GB RAM
+* 2 x 960GB SSD (for RAID-1 mirrored hosting of the OS as well as Cassandra and Redis databases storing system metadata)
+* 12 x 4TB HDD (for ext4 file systems storing object data) (JBOD, no RAID)
+* 2 x 10GbE Ports
+
+### Minimum for production systems:
+
+* 1 CPU, 8 cores
+* 64GB RAM
+* 2 x 480GB SSD (for RAID-1 mirrored hosting of the OS as well as Cassandra and Redis databases storing system metadata)
+* 12 x 4TB HDD (for ext4 file systems storing object data) (JBOD, no RAID)
+* 2 x 10GbE Ports
+
+### Minimum for production systems:
+
+HyperStore software can be installed on a single host that has just one data drive. The host should have at least 1GB of hard drive space, at least 16GB RAM, and preferably at least 8 processor cores. If you install HyperStore software on a host with less resources than this, the install script will display a warning about the host having less than recommended resources. If you try to install HyperStore software
+on a host with less 100MB hard drive space or less than 2GB RAM, the installation will abort.
+
+Then complete these node preparation tasks in this order:
+1. "Installing HyperStore Prerequisites"
+2. "Configuring Network Interfaces, Time Zone, and Data Disks"
+3. "Running the Pre-Install Checks Script"
+
 ## Preparing Your environment
 
 * DNS Set-Up
@@ -43,10 +71,13 @@ s3-admin.enterprise.com IN A 10.1.1.1
 cmc.enterprise.com IN A 10.1.1.1
 ```
 
+### Load Balancing
 
+## Preparing Your Node
 
+To prepare your hosts for HyperStore software Installation:
 
-### Load Balancingd
+First confirm that each host meets HyperStore "Host Hardware and OS Requirements"
 
 
 
