@@ -79,15 +79,77 @@ To prepare your hosts for HyperStore software Installation:
 
 First confirm that each host meets HyperStore "Host Hardware and OS Requirements"
 
+## Operating System Requirements
+
+To install HyperStore 7.2 you must have a RHEL 7.x or CentOS 7.x Linux operating system on each host. HyperStore 7.2 does not support installation on RHEL/CentOS 6.x . Also, HyperStore does not support other
+types of Linux distribution, or non-Linux operating systems. If you have not already done so, install RHEL 7.x or CentOS 7.x in accordance with your hardware manufacturer's recommendations.
+
+To install HyperStore the following services must be disabled on each HyperStore host machine:
+
+* firewalld
+* iptables
+* SELinux
+
+To disable firewalld:
+
+```
+[root]# systemctl stop firewalld
+[root]# systemctl disable firewalld
+```
+
+RHEL/Centos7 uses firewalld by default rather than the iptables service (firewall uses iptables commands but the iptables service itself is not instlaled on RHEL/CentOS by default). So you do not need to take actions in regard to iptables unless you installed and enabled the iptables service on your hotss. If that's the case, then disable the iptables service.
+
+To disable SELinux, edit the configuration file /etc/selinux/config so that SELINUX=disabled. Save your change and then restart the host.
+
+### Python 2.7.x is Required
+
+The HyperStore installer requires Python version 2.7.x. The installer will abort with an error message if any host is using Python 3.x.
+
+## Installing HyperStore Prerequisites
+
+Follow these steps to install and configure HyperStore prerequisites on all of your nodes. Working from a
+single node you will be able to perform this task for your whole cluster.
+
+1. Log into one of your nodes as root. This will be the node from which you will orchestrate the HyperStore installation for your whole cluster. Also, as part of the HyperStore installation, Puppet configuration management software will be installed and configured in the cluster, and this node will become the "Puppet Master" node for purposes of ongoing cluster configuration management. Note that the Puppet Master
+node must be one of your HyperStore nodes. It cannot be a separate node outside of your HyperStore cluster.
+2. On the node that you've chosen to become your Puppet Master node, download or copy the HyperStore product package (CloudianHyperStore-7.2.bin file) into any directory. Also copy your Cloudian license file (\*.lic file) into that same directory. Pay attention to the license file name since you will need the file name in the next step.
+3. In that directory run the commands below to unpack the HyperStore package
+
+```
+[any-directory]# chmod +x CloudianHyperStore-7.2.bin
+[any-directory]# ./CloudianHyperStore-7.2.bin <license-file-name>
+```
+This creates an installation staging directory named /opt/cloudian-staging/7.2, and extracts the HyperStore package contents into the staging directory.
+
+Note: The installation staging directory must persist for the life of your HyperStore system. Do not delete the staging directory after completing the install.
+
+4. Change into the installation staging directory:
+ ```
+ [any-directory]# cd /opt/cloudian-staging/7.2
+ ```
+
+5. In the staging directory, launch the system_setup.sh tool:
+```
+[7.2]# ./system_setup.sh
+```
+This displays the tool's main menu.
+
+6. From the setup tool's main menu, enter "4" for Setup Survey.csv file and follow theprompts to create a cluster Survey file with an entry for each of your HyperStore nodes (including the Puppet Maste node). For each node you will enter a region name, hostname, public IP address, data center name, and rack name.
+
+* For each node the hostname that you enter must exactly match the node's hostname -- as would be returned by running the hostname command on the node.
+* For the region, data center, and rack name the only allowed character types are ASCII alphanumerical characters and dashes. For the region name letters must be lower case.
+* Within a data center, use the same "rack name" for all of the nodes, even if some nodes are on different physical racks than others.
+* Make sure the region name matches the region string that you use in your S3 endpoints in your "DNS Set-Up". 
 
 
+=========================================================================================
 ### Create Kubernetes Cluster
 
 Follow the steps to install and configure the Kubernetes Cluster for HAP.
 
-1. Make every node ready for kubernetes by running ```./k8s\_setup.sh``` on every node of hyperstore. This will install the basic libraries on the node.
-2. Open the ```k8s\_master\_setup.sh``` script and set up the IP address of the node you wish to set kubernetes master.
-3. Run ```./k8s\_master\_setup.sh``` on one of the Hyperstore node you want to make Kubernetes master.
+1. Make every node ready for kubernetes by running ```./k8s_setup.sh``` on every node of hyperstore. This will install the basic libraries on the node.
+2. Open the ```k8s_master_setup.sh``` script and set up the IP address of the node you wish to set kubernetes master.
+3. Run ```./k8s_master_setup.sh``` on one of the Hyperstore node you want to make Kubernetes master.
 4. This script will generate message like follows which should be saved for later use -
 ```
 kubeadm join 10.10.3.70:6443 --token kr0ke4.r05jox8m57wxi9vm --discovery-token-ca-cert-hash sha256:fc24e04ad8f0754cdc73ae905506c5e1b4a5e4482938d73d667664be9af9ff6a
