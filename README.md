@@ -16,8 +16,8 @@ Follow the steps to install and configure the Kubernetes Cluster for HAP.
 2. Open the ```k8s\_master\_setup.sh``` script and set up the IP address of the node you wish to set kubernetes master.
 3. Run ```./k8s\_master\_setup.sh``` on one of the Hyperstore node you want to make Kubernetes master.
 4. This script will generate message like follows which should be saved for later use -
-
-```kubeadm join 10.10.3.70:6443 --token kr0ke4.r05jox8m57wxi9vm --discovery-token-ca-cert-hash sha256:fc24e04ad8f0754cdc73ae905506c5e1b4a5e4482938d73d667664be9af9ff6a
+```
+kubeadm join 10.10.3.70:6443 --token kr0ke4.r05jox8m57wxi9vm --discovery-token-ca-cert-hash sha256:fc24e04ad8f0754cdc73ae905506c5e1b4a5e4482938d73d667664be9af9ff6a
 ```
 
 5. Execute output from previous command on the terminal of every single worker node.
