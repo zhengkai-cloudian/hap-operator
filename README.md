@@ -156,22 +156,27 @@ Having finished "Installing HyperStore Prerequisites" (page 12), you should be a
 network interfaces (if you haven't already fully configured them), set the time zone, and configure data disks on each node in your HyperStore cluster.
 
 1. On the Puppet Master node, from the system setup tool's main menu, complete the setup of the Puppet Master node itself:
+
     a. From the system setup tool's main menu, enter "1" for Configure Networking. This displays the Networking configuration menu.
     ```
     Here you can review the current network interface configuration for the Puppet Master node, and if you wish, perform additional configuration such as configuring an internal/back-end interface. When you are done with any desired network interface configuration changes for this node, return to the setup tool's main menu
     ```
     b. At the setup tool's main menu, enter "2" for setting timezone.
+
     c. Enter "3" for Setup Disks.
 
     From the list of disks on the node select the disks to format as HyperStore data disks, for storage of S3 object data. By default the tool automatically selects all disks that are not already mounted and do not contain a /root, /boot or [swap] mount indication. Selected disks display in green font in the disk list. The tool will format these disks with ext4 file systems and assign them mount points /cloudian1, /cloudian2, /cloudian3, and so on. You can toggle (select/deselect) a disk by entering at the prompt the disk's number from the displayed list (such as "3"). Once you're satisfied with the selected list in green font, enter "c" for Configure Selected Disks and follow the prompts to have the tool configure the selected disks.
 
 2. Next, complete the setup of the other nodes in your cluster:
+
     a. From the setup tool's main menu select "9" for Prep New Node to Add to Cluster.
     b. When prompted enter the IP address of one of the remaining nodes (the nodes other than the Puppet Master node), and then enter the login password for the node.
     c. Using the node preparation menu that displays:
+
         i. Review and complete network interface configuration for the node.
         ii. Set the time zone for the node.
         iii. Configure data disks for the node. Then return to the system setup tool's main menu.
+
     d. Repeat Steps "a" through "c" for each of the remaining nodes in your installation cluster.  
 
 After you've prepared all your nodes and returned to the setup tool's main menu, proceed to "Running the PreInstall Checks Script"
