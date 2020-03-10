@@ -6,7 +6,49 @@
 
 Hyperstore installed with 3 node cluster.
 
-## Quickstart
+## HyperStore Installation Introduction
+
+If you do not yet have the HyperStore 7.2 package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP
+site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`
+
+To install and run HyperStore software you need a HyperStore license file - either an evaluation license or a production license.
+
+## Preparing Your environment
+
+* DNS Set-Up
+* Load Balancing
+
+### DNS Set-Up
+
+For your HyperStore system to be accessible to external clients, you must configure your DNS name servers with entries for the HyperStore service endpoints. Cloudian recommends that you complete your DNS configuration prior to installing the HyperStore system. This section describes the required DNS entries.
+
+If you are doing just a small evaluation and do not require that external clients be able to access any of the HyperStore services, you have the option of using the lightweight domain resolution utility `dnsmasq` which comes bundled with HyperStore -- rather than configuring your DNS environment to support HyperStore service endpoints. If you're going to use `dnsmasq` you can skip ahead to "Preparing Your Nodes"
+
+```
+s3-tokyo.enterprise.com IN A 10.1.1.1
+                             10.1.1.2
+                             10.1.1.3
+*.s3-tokyo.enterprise.com IN A 10.1.1.1
+                               10.1.1.2
+                               10.1.1.3
+s3-website-tokyo.enterprise.com IN A 10.1.1.1
+                                     10.1.1.2
+                                     10.1.1.3
+*.s3-website-tokyo.enterprise.com IN A 10.1.1.1
+                                       10.1.1.2
+                                       10.1.1.3
+s3-admin.enterprise.com IN A 10.1.1.1
+                             10.1.1.2
+                             10.1.1.3
+cmc.enterprise.com IN A 10.1.1.1
+```
+
+
+
+
+### Load Balancingd
+
+
 
 ### Create Kubernetes Cluster
 
