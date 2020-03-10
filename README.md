@@ -139,7 +139,90 @@ This displays the tool's main menu.
 * For each node the hostname that you enter must exactly match the node's hostname -- as would be returned by running the hostname command on the node.
 * For the region, data center, and rack name the only allowed character types are ASCII alphanumerical characters and dashes. For the region name letters must be lower case.
 * Within a data center, use the same "rack name" for all of the nodes, even if some nodes are on different physical racks than others.
-* Make sure the region name matches the region string that you use in your S3 endpoints in your "DNS Set-Up". 
+* Make sure the region name matches the region string that you use in your S3 endpoints in your "DNS Set-Up".
+
+7. If you want to change the root password for your nodes, do so now by entering "5" for Change Root Password and following the prompts. It's recommended to use the same password for each node. Otherwise the pre-installation cluster validation tool described later in the procedure will not be fully functional.
+
+8. Back at the setup tool's main menu enter "6" for Install & Configure Prerequisites. When prompted about whether you want to perform this action for all nodes in your survey file enter "yes". The tool will
+connect to each of your nodes in turn and install the prerequisite packages. You will be prompted to provide the root password either for the whole cluster (if, as recommended, each node has the same
+root password) or for each node in turn (if the nodes have different passwords). When the prerequisite installation completes for all nodes, return to the setup tool's main menu.
+
+Note: If firewalld is running on your hosts the setup tool prompts you for permission to disable it. And if Selinux is enabled on your hosts, the tool automatically disables it without prompting for
+permission (or more specifically, changes it to "permissive" mode for the current running session and changes the configuration so it will be disabled for future boots of the hosts).
+
+## Configuring Network Interfaces, Time Zone, and Data Disks
+
+Having finished "Installing HyperStore Prerequisites" (page 12), you should be at the main menu of the system_setup.sh tool, in the installation directory on your Puppet Master node. Next follow these steps to configure
+network interfaces (if you haven't already fully configured them), set the time zone, and configure data disks on each node in your HyperStore cluster.
+
+1. On the Puppet Master node, from the system setup tool's main menu, complete the setup of the Puppet Master node itself:
+   a. From the system setup tool's main menu, enter "1" for Configure Networking. This displays the Networking configuration menu. Here you can review the current network interface configuration for the Puppet Master node, and if you wish, perform additional configuration such as configuring an internal/back-end interface. When you are done with any desired network interface configuration changes for this node, return to the setup tool's main menu
+   b. At the setup tool's main menu, enter "2" for setting timezone.
+   c. Enter "3" for Setup Disks.
+   From the list of disks on the node select the disks to format as HyperStore data disks, for storage of S3 object data. By default the tool automatically selects all disks that are not already mounted and do not contain a /root, /boot or [swap] mount indication. Selected disks display in green font in the disk list. The tool will format these disks with ext4 file systems and assign them mount points /cloudian1, /cloudian2, /cloudian3, and so on. You can toggle (select/deselect) a disk by entering at the prompt the disk's number from the displayed list (such as "3"). Once you're satisfied with the selected list in green font, enter "c" for Configure Selected Disks and follow the prompts to have the tool configure the selected disks.
+2. Next, complete the setup of the other nodes in your cluster:
+   a. From the setup tool's main menu select "9" for Prep New Node to Add to Cluster.
+   b. When prompted enter the IP address of one of the remaining nodes (the nodes other than the Puppet Master node), and then enter the login password for the node.
+   c. Using the node preparation menu that displays:
+      i. Review and complete network interface configuration for the node.
+      ii. Set the time zone for the node.
+      iii. Configure data disks for the node. Then return to the system setup tool's main menu.
+   d. Repeat Steps "a" through "c" for each of the remaining nodes in your installation cluster.  
+
+After you've prepared all your nodes and returned to the setup tool's main menu, proceed to "Running the PreInstall Checks Script"
+
+## Running the Pre-Install Checks Script
+
+Follow these steps to verify that your cluster now meets all HyperStore requirement for hardware, prerequisite packages and network connectivity.
+
+1. At the setup tool's main menu enter "r" for Run Pre-Installation Checks. This displays the Pre-Installation Checklist menu.
+2. From the Pre-Installation Checklist menu enter "r" for Run Pre-Install Checks. The script then checks to verify that your cluster meets all requirements for hardware, prerequisite packages, and network connectivity. At the end of its run the script outputs to the console a list of items that the script has evaluated and the results of the evaluation. You should review any “Warning” items but they don’t necessarily require action (an example is if the hardware specs are less than recommended but still adequate for the installation to proceed). You must resolve any “Error” items before performing the HyperStore software installation, or the installation will fail.
+3. When you’re done reviewing the results, press any key to continue and then exit the setup script. If you make any system changes to resolve errors found by the pre-install check, run the pre-install check again afterward to verify that your environment meets HyperStore requirements.
+
+After your cluster has successfully passed the pre-install checks, proceed to "Installing a New HyperStore System"
+
+## Installing a New Hyperstore System
+
+This section describes how to do a fresh installation of HyperStore 7.2 software, after "Preparing Your Environment" and "Preparing Your Nodes". From your Puppet Master node you can install HyperStore software across your whole cluster.
+
+1. On your Puppet Master node, in your installation staging directory, launch the HyperStore installation script as follows:
+
+```
+[7.2]# ./cloudianInstall.sh -s survey.csv
+```
+```
+Note If you have not configured your DNS environment for HyperStore (see "DNS Set-Up"
+(page 4)) and you want to instead use the included dnsmasq utility to resolve HyperStore service endpoints, launch the install script with the configure-dnsmasq option as shown below. This
+is not appropriate for production systems.
+[ 7.2]# ./cloudianInstall.sh -s survey.csv configure-dnsmasq
+```
+When you launch the installer the main menu displays:
+
+```
+   Cloudian HyperStore(R) 7.2 Installation/configuration
+  -------------------------------------------------------
+  0 )   Run Pre-Installed Checks
+  1 )   Install Cloudian HyperStore
+  2 )   Cluster Management
+  3 )   Upgrade From a Previous Version
+  4 )   Advanced Configuration Options
+  5 )   Uninstall Cloudian HyperStore
+  6 )   Help
+  7 )   Exit 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 =========================================================================================
