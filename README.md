@@ -243,6 +243,7 @@ After validation tests complete successfully, exit the installation tool.
 ## Install Kubernetes
 
 Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster.
+Perform Step 8 to Step X on only master node.
 
 ### Step 1: Configure Kubernetes Repository
 
@@ -303,23 +304,37 @@ $ sudo sysctl --system
 
 Lastly disable the SWAP to enable kubernetes to work properly:
 ```
-sudo swapoff -a
+$ sudo swapoff -a
 ```
 
 ### Step 7: Enable kubelet and start kubelete as process
+```
 sudo systemctl enable kubelet && sudo systemctl start kubelet
-
-
-
-
-================================================================================
-1. Make every node ready for kubernetes by running ```./k8s_setup.sh``` on every node of hyperstore. This will install the basic libraries on the node.
-2. Open the ```k8s_master_setup.sh``` script and set up the IP address of the node you wish to set kubernetes master.
-3. Run ```./k8s_master_setup.sh``` on one of the Hyperstore node you want to make Kubernetes master.
-4. This script will generate message like follows which should be saved for later use -
 ```
-kubeadm join 10.10.3.70:6443 --token kr0ke4.r05jox8m57wxi9vm --discovery-token-ca-cert-hash sha256:fc24e04ad8f0754cdc73ae905506c5e1b4a5e4482938d73d667664be9af9ff6a
+
+NOTE: Perform following steps only on the node you wish to make a master node for Kubernetes Cluster
+
+Step 8: Create cluster with kubeadm
+
+Execute following series of commands as `root` to create kubernetes cluster.
+
 ```
+$ ls /etc/kubernetes/admin.conf && mv /etc/kubernetes/admin.conf.bak
+$ touch kubeMasterOutput.txt
+# kubeadm config images pull
+# init will pull the images
+$ kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address <IP-Address-of-your-node> --ignore-preflight-errors=NumCPU
+```
+
+This will generate a `kubeadm join` message in following format -
+
+```
+kubeadm join <IP>:<port> --token <token-value> --discovery-token-ca-cert-hash sha256:<discovery-token>
+```
+
+Copy and execute the `kubeadm join` @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+It is advised to save this message in a text file so that future worker nodes of the cluster can use this to join the cluster.
+
 
 5. Execute output from previous command on the terminal of every single worker node.
 6. Run ```$ kubectl cluster-info``` to check the cluster status.
