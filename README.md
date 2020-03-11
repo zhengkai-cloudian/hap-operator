@@ -37,9 +37,9 @@ HyperStore software can be installed on a single host that has just one data dri
 on a host with less 100MB hard drive space or less than 2GB RAM, the installation will abort.
 
 Then complete these node preparation tasks in this order:
-1. "Installing HyperStore Prerequisites"
-2. "Configuring Network Interfaces, Time Zone, and Data Disks"
-3. "Running the Pre-Install Checks Script"
+1. Installing HyperStore Prerequisites
+2. Configuring Network Interfaces, Time Zone, and Data Disks
+3. Running the Pre-Install Checks Script
 
 ## Preparing Your environment
 
@@ -147,7 +147,7 @@ This displays the tool's main menu.
 connect to each of your nodes in turn and install the prerequisite packages. You will be prompted to provide the root password either for the whole cluster (if, as recommended, each node has the same
 root password) or for each node in turn (if the nodes have different passwords). When the prerequisite installation completes for all nodes, return to the setup tool's main menu.
 
-Note: If firewalld is running on your hosts the setup tool prompts you for permission to disable it. And if Selinux is enabled on your hosts, the tool automatically disables it without prompting for
+Note: If `firewalld` is running on your hosts the setup tool prompts you for permission to disable it. And if Selinux is enabled on your hosts, the tool automatically disables it without prompting for
 permission (or more specifically, changes it to "permissive" mode for the current running session and changes the configuration so it will be disabled for future boots of the hosts).
 
 ## Configuring Network Interfaces, Time Zone, and Data Disks
@@ -170,7 +170,9 @@ network interfaces (if you haven't already fully configured them), set the time 
 2. Next, complete the setup of the other nodes in your cluster:
 
     a. From the setup tool's main menu select "9" for Prep New Node to Add to Cluster.
+
     b. When prompted enter the IP address of one of the remaining nodes (the nodes other than the Puppet Master node), and then enter the login password for the node.
+
     c. Using the node preparation menu that displays:
 
         i. Review and complete network interface configuration for the node.
@@ -223,24 +225,38 @@ When you launch the installer the main menu displays:
   7 )   Exit
 ```
 
+2. From the installer main menu, enter "1" for Install Cloudian HyperStore. Follow the prompts to perform the HyperStore installation across all the nodes in your cluster survey file (which you created earlier during the node preparation task)
+
+During the HyperStore installation you will be prompted to provide the following cluster configuration information:
+
+* The name of the internal interface that your nodes will use by default for internal cluster communications. For example, eth1. Cassandra, Redis, and the HyperStore Service are among the services that will utilize the internal interface for intra-cluster communications.
+* The starting "replication strategy" that you want to use to protect system metadata (such as usage reporting data and user account information). The replication strategy you enter must be formatted as "<datacenter_name>:<replication_#>". For example, "DC1:3" means that in the data center named DC1, three instances of each system metadata object will be stored (with each instance on a different host). If you are installing HyperStore into multiple data centers you must format this as a comma-separated list specifying the replicas per data center -- for example "DC1:2,DC2:1". The default is 3 replicas per service region, and then subsequently the system automatically adjusts the system metadata replication level based on the storage policies that you create. For more on this topic see "Storage of System Metadata" in the HyperStore Administrator's Guide
+* Your organization domain. For example, enterprise.com. From this input that you provide, the installation script will automatically derive HyperStore service endpoint values. You can accept the derived endpoint values that the script presents to you, or optionally you can enter customized endpoint values at the prompts. For S3 service endpoint the default is to have one endpoint per service region, but you also have the option of entering multiple comma-separated endpoints within a service region -- if for example you want different data centers within the region to use different S3 service endpoints. If you want to have different S3 endpoints for different data centers within the same service region, the recommended S3 endpoint syntax is s3-<region>.<dcname>.<domain>. See "DNS Set-Up" (page 4) for more details about HyperStore service endpoints.
+
+At the conclusion of the installation an "Install Cloudian HyperStore" sub-menu displays, with indication of the installation status. If the installation completed successfully, the "Load Schema and Start Services" menu item should show an "OK" status. After seeing that the "Load Schema and Start Services" status is OK, return to the installer's main menu.
+
+3. After installation has completed successfully, from the installer's main menu enter "2" for Cluster Management and then enter "d" for Run Validation Tests. This executes some basic automated tests to confirm that your HyperStore system is working properly. The tests include S3 operations such as creating an S3 user group, creating an S3 user, creating a storage bucket for that user, and uploading and downloading an S3 object.
+
+After validation tests complete successfully, exit the installation tool.
 
 
+## Install Kubernetes
 
+### Step 1: Configure Kubernetes Repository
 
+Kubernetes packages are not available from official CentOS 7 repositories. This step needs to be performed on the Master Node, and each Worker Node you plan on utilizing for your container setup. Enter the following command to retrieve the Kubernetes repositories.
 
-
-
-
-
-
-
-
-
-
-=========================================================================================
-### Create Kubernetes Cluster
-
-Follow the steps to install and configure the Kubernetes Cluster for HAP.
+```
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+```
 
 1. Make every node ready for kubernetes by running ```./k8s_setup.sh``` on every node of hyperstore. This will install the basic libraries on the node.
 2. Open the ```k8s_master_setup.sh``` script and set up the IP address of the node you wish to set kubernetes master.
