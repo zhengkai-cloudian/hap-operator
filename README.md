@@ -242,10 +242,12 @@ After validation tests complete successfully, exit the installation tool.
 
 ## Install Kubernetes
 
-Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster.
-Perform Step 8 to Step X on only master node.
+To create a kubernetes cluster in the CentOS environment, you need to install some basic setup on every node.
 
-### Step 1: Configure Kubernetes Repository
+* Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster as a worker node.
+* Perform Step 8 only on the master node.
+
+### Step 1: Configure Kubernetes Repository 
 
 Kubernetes packages are not available from official CentOS 7 repositories. This step needs to be performed on the Master Node, and each Worker Node you plan on utilizing for your container setup. Enter the following command to retrieve the Kubernetes repositories.
 ```
@@ -314,7 +316,7 @@ sudo systemctl enable kubelet && sudo systemctl start kubelet
 
 NOTE: Perform following steps only on the node you wish to make a master node for Kubernetes Cluster
 
-Step 8: Create cluster with kubeadm
+### Step 8: Create cluster with kubeadm
 
 Execute following series of commands as `root` to create kubernetes cluster.
 
@@ -325,24 +327,22 @@ $ touch kubeMasterOutput.txt
 # init will pull the images
 $ kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address <IP-Address-of-your-node> --ignore-preflight-errors=NumCPU
 ```
-
 This will generate a `kubeadm join` message in following format -
-
 ```
 kubeadm join <IP>:<port> --token <token-value> --discovery-token-ca-cert-hash sha256:<discovery-token>
 ```
+Copy and execute the complete `kubeadm join` command on each of the worker nodes. Also keep this message/command saved for future use by prospective worker nodes.
 
-Copy and execute the `kubeadm join` @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-It is advised to save this message in a text file so that future worker nodes of the cluster can use this to join the cluster.
+IMPORTANT: If in any case your execution fails in such a way that either master node fails to create the cluster network or worker node fails to join the network, run `$ kubeadm reset` and the error should resolve.
 
+### Step 9: Check cluster status
 
-5. Execute output from previous command on the terminal of every single worker node.
-6. Run ```$ kubectl cluster-info``` to check the cluster status.
-7. Run ```$ kubectl get nodes``` to confirm that nodes worker nodes have joined the cluster.
+```
+$ kubectl cluster-info  #to check the cluster status.
+$ kubectl get nodes     #to confirm that nodes worker nodes have joined the cluster.
+```
 
-Note: In case you have any errors in setting up k8s cluster, you can run ```$ kubeadm reset``` to reset the master and run the master script again.  
-
-### Setup for Operator
+## Setup for Operator
 
 Follow the steps to install and configure Operator on master node of Kubernetes
 
