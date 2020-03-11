@@ -247,7 +247,7 @@ To create a kubernetes cluster in the CentOS environment, you need to install so
 * Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster as a worker node.
 * Perform Step 8 only on the master node.
 
-### Step 1: Configure Kubernetes Repository 
+### Step 1: Configure Kubernetes Repository
 
 Kubernetes packages are not available from official CentOS 7 repositories. This step needs to be performed on the Master Node, and each Worker Node you plan on utilizing for your container setup. Enter the following command to retrieve the Kubernetes repositories.
 ```
@@ -335,7 +335,18 @@ Copy and execute the complete `kubeadm join` command on each of the worker nodes
 
 IMPORTANT: If in any case your execution fails in such a way that either master node fails to create the cluster network or worker node fails to join the network, run `$ kubeadm reset` and the error should resolve.
 
-### Step 9: Check cluster status
+### Step 9: Change the ownership
+
+It is advised to change the ownership of kubernetes config directory so that non-root users can make deployment of different services.
+
+```
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config 
+```
+
+
+### Step 11: Check cluster status
 
 ```
 $ kubectl cluster-info  #to check the cluster status.
@@ -344,11 +355,11 @@ $ kubectl get nodes     #to confirm that nodes worker nodes have joined the clus
 
 ## Setup for Operator
 
-Follow the steps to install and configure Operator on master node of Kubernetes
+Follow the steps to install and configure Operator on master node of Kubernetes cluster.
 
 1. Install GO as per your environment from goland officla docs [https://golang.org/dl/]
 2. Download hap-operator source and move into the `hap-operator` directory
-3. If your k8s cluster is running and setup properly, setup RBAC and deploy the operator:
+3. Change into operator directory and execute following commands to setup RBAC and deploy the operator:
 ```
 $ kubectl create -f deploy/service_account.yaml
 $ kubectl create -f deploy/role.yaml
@@ -382,4 +393,4 @@ Running an application in the kubernetes using operator includes following steps
 2. Create Controller for the application
 3. Deploy the CRD using kubectl.
 
-[In progress]
+[In proofread & progress]
