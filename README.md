@@ -242,12 +242,13 @@ After validation tests complete successfully, exit the installation tool.
 
 ## Install Kubernetes
 
+Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster.
+
 ### Step 1: Configure Kubernetes Repository
 
 Kubernetes packages are not available from official CentOS 7 repositories. This step needs to be performed on the Master Node, and each Worker Node you plan on utilizing for your container setup. Enter the following command to retrieve the Kubernetes repositories.
-
 ```
-cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+$ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -257,7 +258,61 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
 ```
+### Step 2: Docker installation
 
+Install, enable and start docker.
+```
+$ sudo yum install -y docker
+$ sudo systemctl enable docker && sudo systemctl start docker
+```
+Also, verify that docker version is 1.12 and greater.
+
+### Step 3: Disable the SELinux and Firewall
+
+The containers need to access the host filesystem. SELinux needs to be set to permissive mode, which effectively disables its security functions. If you already have the HyperStore running, that means you've has already disabled and you can ignore this step.
+```
+# disable SELinux
+$ sudo setenforce 0
+
+# stop firewall
+$ sudo systemctl stop firewalld
+$ sudo systemctl disable firewalld
+```
+
+### Step 4: Install kubernetes component
+
+Install kubeadm, kubelet and kubectl on CentOS.
+```
+$ sudo yum install -y kubelet kubeadm kubectl
+```
+
+### Step 5: Update Iptables Settings
+
+Set the net.bridge.bridge-nf-call-iptables to ‘1’ in your sysctl config file. This ensures that packets are properly processed by IP tables during filtering and port forwarding.
+```
+$ cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward=1
+EOF'
+
+$ sudo sysctl --system
+```
+
+### Step 6: Disable SWAP
+
+Lastly disable the SWAP to enable kubernetes to work properly:
+```
+sudo swapoff -a
+```
+
+### Step 7: Enable kubelet and start kubelete as process
+sudo systemctl enable kubelet && sudo systemctl start kubelet
+
+
+
+
+================================================================================
 1. Make every node ready for kubernetes by running ```./k8s_setup.sh``` on every node of hyperstore. This will install the basic libraries on the node.
 2. Open the ```k8s_master_setup.sh``` script and set up the IP address of the node you wish to set kubernetes master.
 3. Run ```./k8s_master_setup.sh``` on one of the Hyperstore node you want to make Kubernetes master.
