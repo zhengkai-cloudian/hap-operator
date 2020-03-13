@@ -4,16 +4,33 @@
 
 ## Prerequisites
 
-Hyperstore installed with 3 node cluster.
+Check the minimum requirement section.
 
 ## HyperStore Installation Introduction
 
-If you do not yet have the HyperStore 7.2 package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP
-site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`
+If you do not yet have the HyperStore 7.2 package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`
 
 To install and run HyperStore software you need a HyperStore license file - either an evaluation license or a production license.
 
+**NOTE** If you do not have the license file yet, please Send an email to cloudian-license@cloudian.com[cloudian-license@cloudian.com] With the following parameters:
+
+```
+Net Storage:
+Expiration:
+Maximum Tiered Storage:
+Object Lock Mode:
+```
+For example:
+```
+Net Storage: 50 TB
+Expiration: 2 Years
+Maximum Tiered Storage: 10TB
+Object Lock Mode: Enabled
+```
+
 ## Host Hardware and OS Requirements
+
+Both single and multi-node are similar in configuration during installation.
 
 ### Recommended for Production system:
 
@@ -26,7 +43,7 @@ To install and run HyperStore software you need a HyperStore license file - eith
 ### Minimum for production systems:
 
 * 1 CPU, 8 cores
-* 64GB RAM
+* 32 GB RAM
 * 2 x 480GB SSD (for RAID-1 mirrored hosting of the OS as well as Cassandra and Redis databases storing system metadata)
 * 12 x 4TB HDD (for ext4 file systems storing object data) (JBOD, no RAID)
 * 2 x 10GbE Ports
@@ -35,6 +52,8 @@ To install and run HyperStore software you need a HyperStore license file - eith
 
 HyperStore software can be installed on a single host that has just one data drive. The host should have at least 1GB of hard drive space, at least 16GB RAM, and preferably at least 8 processor cores. If you install HyperStore software on a host with less resources than this, the install script will display a warning about the host having less than recommended resources. If you try to install HyperStore software
 on a host with less 100MB hard drive space or less than 2GB RAM, the installation will abort.
+
+**IMPORTANT** Our official minimum requirement is 3 nodes. If you only have one node (recommended and used for the testing purposes only), you don't have data protection.  
 
 Then complete these node preparation tasks in this order:
 1. Installing HyperStore Prerequisites
@@ -73,6 +92,8 @@ cmc.enterprise.com IN A 10.1.1.1
 
 ### Load Balancing
 
+If you are building your nodes using Cloudian ISO, load balancer will be automatically installed and configured. You are required to configure it otherwise.
+
 ## Preparing Your Node
 
 To prepare your hosts for HyperStore software Installation:
@@ -103,7 +124,7 @@ To disable SELinux, edit the configuration file /etc/selinux/config so that SELI
 
 ### Python 2.7.x is Required
 
-The HyperStore installer requires Python version 2.7.x. The installer will abort with an error message if any host is using Python 3.x.
+If you are building your nodes using Cloudian ISO, Python 2.7.x will be automatically installed and configured. In case you want to use some different ISO, the HyperStore installer requires Python version 2.7.x. The installer will abort with an error message if any host is using Python 3.x.
 
 ## Installing HyperStore Prerequisites
 
@@ -210,6 +231,8 @@ This is not appropriate for production systems.
 
 [ 7.2]# ./cloudianInstall.sh -s survey.csv configure-dnsmasq
 ```
+**NOTE** If you are doing a single node installation, you will have to use `force` flag in above command.
+
 When you launch the installer the main menu displays:
 
 ```
@@ -244,7 +267,7 @@ After validation tests complete successfully, exit the installation tool.
 
 To create a kubernetes cluster in the CentOS environment, you need to install some basic setup on every node.
 
-* Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster as a worker node.
+* Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster.
 * Perform Step 8 only on the master node.
 
 ### Step 1: Configure Kubernetes Repository
@@ -335,18 +358,17 @@ Copy and execute the complete `kubeadm join` command on each of the worker nodes
 
 IMPORTANT: If in any case your execution fails in such a way that either master node fails to create the cluster network or worker node fails to join the network, run `$ kubeadm reset` and the error should resolve.
 
-### Step 9: Change the ownership
+### Step 9: Change the ownership and deploy network protocol
 
 It is advised to change the ownership of kubernetes config directory so that non-root users can make deployment of different services.
 
 ```
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config 
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
 ```
-
-
-### Step 11: Check cluster status
+### Step 10: Check cluster status
 
 ```
 $ kubectl cluster-info  #to check the cluster status.
@@ -357,7 +379,7 @@ $ kubectl get nodes     #to confirm that nodes worker nodes have joined the clus
 
 Follow the steps to install and configure Operator on master node of Kubernetes cluster.
 
-1. Install GO as per your environment from goland officla docs [https://golang.org/dl/]
+1. Install GO as per your environment from golang official docs [https://golang.org/dl/]
 2. Download hap-operator source and move into the `hap-operator` directory
 3. Change into operator directory and execute following commands to setup RBAC and deploy the operator:
 ```
