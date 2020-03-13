@@ -4,14 +4,13 @@
 
 ## Prerequisites
 
-Check the minimum requirement section.
+Check the minimum requirements section.
 
 ## HyperStore Installation Introduction
 
-If you do not yet have the HyperStore 7.2 package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`
+If you do not yet have the HyperStore package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`
 
-To install and run HyperStore software you need a HyperStore license file - either an evaluation license or a production license.
-
+To install and run HyperStore software you need a HyperStore license file. 
 **NOTE** If you do not have the license file yet, please Send an email to cloudian-license@cloudian.com With the following parameters:
 
 ```
@@ -28,26 +27,16 @@ Maximum Tiered Storage: 10TB
 Object Lock Mode: Enabled
 ```
 
-**IMPORTANT** It is advised to use the admin installation guide that comes with the Cloudian HyperStore package you have downloaded. You can refer the installation process from that in case you need detailed instruction to configure installation. A sample admin guide has already been added in the [docs](https://github.com/cloudian/hap-operator/tree/master/docs) section this github repo for 7.2.  
+**IMPORTANT** It is advised to use the HyperStore Install Guide documentation that comes with the Cloudian HyperStore package you have downloaded. You can refer to the installation instructions from that in case you need detailed instruction to configure installation. A set of HyperStore 7.2 documentation has been added in the [docs](https://github.com/cloudian/hap-operator/tree/master/docs) section this github repo.  
 
 ## Host Hardware and OS Requirements
-
 Both single and multi-node are similar in configuration during installation.
 
 ### Recommended for Production system:
-
-* 1 CPU, 8 cores
-* 128GB RAM
-* 2 x 960GB SSD (for RAID-1 mirrored hosting of the OS as well as Cassandra and Redis databases storing system metadata)
-* 12 x 4TB HDD (for ext4 file systems storing object data) (JBOD, no RAID)
-* 2 x 10GbE Ports
-
-### Minimum for production systems:
-
-* 1 CPU, 8 cores
-* 64 GB RAM
-* 2 x 480GB SSD (for RAID-1 mirrored hosting of the OS as well as Cassandra and Redis databases storing system metadata)
-* 12 x 4TB HDD (for ext4 file systems storing object data) (JBOD, no RAID)
+* 1 CPU (Intel Gold), Minimum 16 cores
+* 256GB RAM
+* 2 x 960GB SSD (RAID-1 mirror of the OS and Cassandra and Redis)
+* 2 x 4TB HDD or SSD (for ext4 file system storing object data) (JBOD, no RAID)
 * 2 x 10GbE Ports
 
 ### Minimum for Software Installation :
@@ -56,7 +45,7 @@ HyperStore software can be installed on a single host that has just one data dri
 
 If you try to install HyperStore software on a host with less 100MB hard drive space or less than 2GB RAM, the installation will abort.
 
-**IMPORTANT** Our official minimum requirement is 3 nodes. If you only have one node (recommended and used for the testing purposes only), you don't have data protection.  
+**IMPORTANT** Our official minimum requirement is 3 nodes. If you only have one node (recommended for testing purposes only), you don't have data protection in case the node is unavailable or fails.  
 
 Then complete these node preparation tasks in this order:
 1. Installing HyperStore Prerequisites
@@ -105,8 +94,8 @@ First confirm that each host meets HyperStore "Host Hardware and OS Requirements
 
 ## Operating System Requirements
 
-To install HyperStore 7.2 you must have a RHEL 7.x or CentOS 7.x Linux operating system on each host. HyperStore 7.2 does not support installation on RHEL/CentOS 6.x . Also, HyperStore does not support other
-types of Linux distribution, or non-Linux operating systems. If you have not already done so, install RHEL 7.x or CentOS 7.x in accordance with your hardware manufacturer's recommendations.
+To install HyperStore 7.2 you must have CentOS 7.x Linux operating system on each host. HyperStore 7.2 does not support installation on CentOS 6.x . Also, HyperStore does not support other
+types of Linux distribution, or non-Linux operating systems. If you have not already done so, install CentOS 7.x in accordance with your hardware manufacturer's recommendations.
 
 To install HyperStore the following services must be disabled on each HyperStore host machine:
 
@@ -121,7 +110,7 @@ To disable firewalld:
 [root]# systemctl disable firewalld
 ```
 
-RHEL/Centos7 uses firewalld by default rather than the iptables service (firewall uses iptables commands but the iptables service itself is not instlaled on RHEL/CentOS by default). So you do not need to take actions in regard to iptables unless you installed and enabled the iptables service on your hotss. If that's the case, then disable the iptables service.
+CentOS 7 uses firewalld by default rather than the iptables service (firewall uses iptables commands but the iptables service itself is not instlaled on RHEL/CentOS by default). So you do not need to take actions in regard to iptables unless you installed and enabled the iptables service on your hotss. If that's the case, then disable the iptables service.
 
 To disable SELinux, edit the configuration file /etc/selinux/config so that SELINUX=disabled. Save your change and then restart the host.
 
