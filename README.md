@@ -28,7 +28,7 @@ Maximum Tiered Storage: 10TB
 Object Lock Mode: Enabled
 ```
 
-**IMPORTANT** It is advised to use the admin installation guide that comes the Cloudian HyperStore package you have downloaded. You can refer the installation process from that in case you need detailed instruction to configure installation. A sample admin guide has already been added in the docs[https://github.com/cloudian/hap-operator/tree/master/docs] section this github repo for 7.2.  
+**IMPORTANT** It is advised to use the admin installation guide that comes with the Cloudian HyperStore package you have downloaded. You can refer the installation process from that in case you need detailed instruction to configure installation. A sample admin guide has already been added in the docs[https://github.com/cloudian/hap-operator/tree/master/docs] section this github repo for 7.2.  
 
 ## Host Hardware and OS Requirements
 
