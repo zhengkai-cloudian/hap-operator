@@ -12,7 +12,7 @@ If you do not yet have the HyperStore 7.2 package, you can obtain it from the Cl
 
 To install and run HyperStore software you need a HyperStore license file - either an evaluation license or a production license.
 
-**NOTE** If you do not have the license file yet, please Send an email to cloudian-license@cloudian.com[cloudian-license@cloudian.com] With the following parameters:
+**NOTE** If you do not have the license file yet, please Send an email to cloudian-license@cloudian.com With the following parameters:
 
 ```
 Net Storage:
@@ -27,6 +27,8 @@ Expiration: 2 Years
 Maximum Tiered Storage: 10TB
 Object Lock Mode: Enabled
 ```
+
+**IMPORTANT** It is advised to use the admin installation guide that comes the Cloudian HyperStore package you have downloaded. You can refer the installation process from that in case you need detailed instruction to configure installation. A sample admin guide has already been added in the docs[https://github.com/cloudian/hap-operator/tree/master/docs] section this github repo for 7.2.  
 
 ## Host Hardware and OS Requirements
 
@@ -43,15 +45,16 @@ Both single and multi-node are similar in configuration during installation.
 ### Minimum for production systems:
 
 * 1 CPU, 8 cores
-* 32 GB RAM
+* 64 GB RAM
 * 2 x 480GB SSD (for RAID-1 mirrored hosting of the OS as well as Cassandra and Redis databases storing system metadata)
 * 12 x 4TB HDD (for ext4 file systems storing object data) (JBOD, no RAID)
 * 2 x 10GbE Ports
 
-### Minimum for production systems:
+### Minimum for Software Installation :
 
-HyperStore software can be installed on a single host that has just one data drive. The host should have at least 1GB of hard drive space, at least 16GB RAM, and preferably at least 8 processor cores. If you install HyperStore software on a host with less resources than this, the install script will display a warning about the host having less than recommended resources. If you try to install HyperStore software
-on a host with less 100MB hard drive space or less than 2GB RAM, the installation will abort.
+HyperStore software can be installed on a single host that has just one data drive. The host should have at least 1GB of hard drive space, at least 32GB RAM, and preferably at least 8 processor cores. If you install HyperStore software on a host with less resources than this, the install script will display a warning about the host having less than recommended resources.
+
+If you try to install HyperStore software on a host with less 100MB hard drive space or less than 2GB RAM, the installation will abort.
 
 **IMPORTANT** Our official minimum requirement is 3 nodes. If you only have one node (recommended and used for the testing purposes only), you don't have data protection.  
 
