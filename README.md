@@ -383,39 +383,103 @@ $ kubectl get nodes     #to confirm that nodes worker nodes have joined the clus
 Follow the steps to install and configure Operator on master node of Kubernetes cluster.
 
 1. Install GO as per your environment from golang official docs [https://golang.org/dl/]
-2. Download hap-operator source and move into the `hap-operator` directory
-3. Change into operator directory and execute following commands to setup RBAC and deploy the operator:
-```
-$ kubectl create -f deploy/service_account.yaml
-$ kubectl create -f deploy/role.yaml
-$ kubectl create -f deploy/role_binding.yaml
-$ kubectl create -f deploy/operator.yaml
-```
-NOTE: To apply the RBAC you need to be logged in as `root`
+2. Download hap-operator source and move into the hap-operator directory
+3. To deploy the operator to the cluster, execute the following commands.
 
-Verify that the `hap-operator` deployment is up and running:
+The following commands install the CRD, set permissions for controller to access Kubernetes API and help in deploying the operator.
 ```
-$ kubectl get deployment
-NAME                     DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-hap-operator             1         1         1            1           1m
+  $ kubectl apply -f deploy/crds/cloudian.com_hapcontainers_crd.yaml
+  $ kubectl apply -f deploy/service_account.yaml
+  $ kubectl apply -f deploy/role.yaml
+  $ kubectl apply -f deploy/role_binding.yaml
+  $ kubectl apply -f deploy/operator.yaml
 ```
 
-Verify that the `hap-operator` pod is up and running:
+4. The following command creates hapcontainer object in the cluster -
+
 ```
-$ kubectl get pod
-NAME                                  READY     STATUS    RESTARTS   AGE
-hap-operator-7d76948766-nrcp7         1/1       Running   0          24s
-```
-If you want to check the logs of your operator:
-```
-$ kubectl logs hap-operator-7d76948766-nrcp7
+$ kubectl apply -f deploy/crds/cloudian.com_v1_hapcontainer_cr.yaml
 ```
 
-### running application on kubernetes
+5. We can verify if the operator pod and pod with the image is running by the following command
 
-Running an application in the kubernetes using operator includes following steps:
-1. Create CustomResourceDefinition for the application
-2. Create Controller for the application
-3. Deploy the CRD using kubectl.
+```
+$ kubectl get pods
+```
+The output should be similar to the following with both the operator and the container pod running
+```
+   NAME                                     READY   STATUS    RESTARTS   AGE
+   example-hapcontainer-happod              1/1     Running   0          121m
+   hap-operator-6d6f854c9c-g7hhh            1/1     Running   0          145m
+```
+
+If the status of the hap container pod is in **ContainerCreating**, we should wait for few more minutes and check until it changes to **Running**.
+
+ 6. Once the container is **Running**, we can check whether the container has the needed libraries(Spark, Tensorflow) installed by getting a shell to the running container.
+
+```
+    $ kubectl exec -it example-hapcontainer-happod /bin/bash
+```
+Inside the container shell, check spark installation by executing
+
+```
+$ spark-shell
+```
+The output would look like this -
+```
+    20/03/14 01:13:25 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java       classes where applicable
+    Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+    Setting default log level to "WARN".
+    To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+    Spark context Web UI available at http://example-hapcontainer-happod:4040
+    Spark context available as 'sc' (master = local[*], app id = local-1584148409863).
+    Spark session available as 'spark'.
+    Welcome to
+          ____              __
+         / __/__  ___ _____/ /__
+        _\ \/ _ \/ _ `/ __/  '_/
+       /___/ .__/\_,_/_/ /_/\_\   version 3.0.0-preview2
+          /_/
+
+    Using Scala version 2.12.10 (OpenJDK 64-Bit Server VM, Java 1.8.0_242)
+    Type in expressions to have them evaluated.
+    Type :help for more information.
+
+    scala>
+
+    Check Tensorflow installation by the following command
+    #pip show tensorflow
+    Name: tensorflow
+    Version: 2.1.0
+    Summary: TensorFlow is an open source machine learning framework for everyone.
+    Home-page: https://www.tensorflow.org/
+    Author: Google Inc.
+    Author-email: packages@tensorflow.org
+    License: Apache 2.0
+    Location: /usr/local/lib/python3.6/dist-packages
+```
+
+7.  When a pod is deleted, new pod is automatically added. You can test this by explicitly deleting using the following command
+
+```
+$ kubectl delete pods example-hapcontainer-happod
+```
+Check if new pod is created
+```
+$ kubectl get pods
+```
+You should see a new pod up and running
+
+### Cleaning up the resources
+
+Use the following command to delete all the resources created
+```
+  $ kubectl delete -f deploy/service_account.yaml
+  $ kubectl delete -f deploy/role.yaml
+  $ kubectl delete -f deploy/role_binding.yaml
+  $ kubectl delete -f deploy/crds/cloudian.com_hapcontainers_crd.yaml
+  $ kubectl delete -f deploy/operator.yaml
+  $ kubectl delete -f deploy/crds/cloudian.com_v1_hapcontainer_cr.yaml
+```
 
 [In proofread & progress]
