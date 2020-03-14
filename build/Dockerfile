@@ -1,11 +1,11 @@
-FROM centos:7
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
-ENV OPERATOR=/usr/local/bin/podset-operator \
+ENV OPERATOR=/usr/local/bin/hap-operator \
     USER_UID=1001 \
-    USER_NAME=podset-operator
+    USER_NAME=hap-operator
 
 # install operator binary
-COPY build/_output/bin/podset-operator ${OPERATOR}
+COPY build/_output/bin/hap-operator ${OPERATOR}
 
 COPY build/bin /usr/local/bin
 RUN  /usr/local/bin/user_setup

@@ -2,7 +2,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   creationTimestamp: null
-  name: podset-operator
+  name: hap-operator
 rules:
 - apiGroups:
   - ""
@@ -48,7 +48,7 @@ rules:
 - apiGroups:
   - apps
   resourceNames:
-  - podset-operator
+  - hap-operator
   resources:
   - deployments/finalizers
   verbs:
@@ -67,19 +67,7 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - app.example.com
-  resources:
-  - '*'
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - hap.cloudian.com
+  - cloudian.com
   resources:
   - '*'
   verbs:
