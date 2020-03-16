@@ -6,11 +6,21 @@
 
 Check the minimum requirements section.
 
+## Installation Steps In-Brief
+
+The overall high level installation steps -
+
+1. Install CentOS 7.2 (preferably with Cloudian ISO)
+2. Install HyperStore
+3. Install Kubernetes
+4. Install Hap-Operator
+
 ## HyperStore Installation Introduction
 
-If you do not yet have the HyperStore package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`
+If you do not yet have the HyperStore package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`.
 
-To install and run HyperStore software you need a HyperStore license file. 
+To install and run HyperStore software you need a HyperStore license file.
+
 **NOTE** If you do not have the license file yet, please Send an email to cloudian-license@cloudian.com With the following parameters:
 
 ```
