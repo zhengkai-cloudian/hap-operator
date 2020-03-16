@@ -12,9 +12,9 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/rest"
 
-	"github.com/operator-framework/operator-sdk/podset-operator/pkg/apis"
-	"github.com/operator-framework/operator-sdk/podset-operator/pkg/controller"
-	"github.com/operator-framework/operator-sdk/podset-operator/version"
+	"hap-operator/pkg/apis"
+	"hap-operator/pkg/controller"
+	"hap-operator/version"
 
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
 	kubemetrics "github.com/operator-framework/operator-sdk/pkg/kube-metrics"
@@ -84,7 +84,7 @@ func main() {
 
 	ctx := context.TODO()
 	// Become the leader before proceeding
-	err = leader.Become(ctx, "podset-operator-lock")
+	err = leader.Become(ctx, "hap-operator-lock")
 	if err != nil {
 		log.Error(err, "")
 		os.Exit(1)

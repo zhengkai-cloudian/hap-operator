@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: podset-operator
+  name: hap-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: podset-operator
+      name: hap-operator
   template:
     metadata:
       labels:
-        name: podset-operator
+        name: hap-operator
     spec:
-      serviceAccountName: podset-operator
+      serviceAccountName: hap-operator
       containers:
-        - name: podset-operator
+        - name: hap-operator
           # Replace this with the built image name
-          image: anirtek/podset-operator
+          image: nvijayaraju/hapcontainer-operator:dev
           command:
-          - podset-operator
+          - hap-operator
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
@@ -30,4 +30,4 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: "podset-operator"
+              value: "hap-operator"

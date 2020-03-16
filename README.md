@@ -480,5 +480,3 @@ Use the following command to delete all the resources created
   $ kubectl delete -f deploy/operator.yaml
   $ kubectl delete -f deploy/crds/cloudian.com_v1_hapcontainer_cr.yaml
 ```
-
-[In proofread & progress]
