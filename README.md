@@ -156,8 +156,9 @@ $ kubectl get nodes     #to confirm that nodes worker nodes have joined the clus
 Follow the steps to install and configure Operator on master node of Kubernetes cluster.
 
 1. Install GO as per your environment from golang official docs [https://golang.org/dl/]
-2. Download hap-operator source and move into the hap-operator directory
-3. To deploy the operator to the cluster, execute the following commands.
+2. Install operator-sdk following instructions from the following Github repo https://github.com/operator-framework/operator-sdk/blob/master/doc/user/install-operator-sdk.md
+3. Download hap-operator source and move into the hap-operator directory
+4. To deploy the operator to the cluster, execute the following commands.
 
 The following commands install the CRD, set permissions for controller to access Kubernetes API and help in deploying the operator.
 ```
@@ -196,7 +197,7 @@ If the status of the hap container pod is in **ContainerCreating**, we should wa
 Inside the container shell, check spark installation by executing
 
 ```
-$ spark-shell
+    $ spark-shell
 ```
 The output would look like this -
 ```
@@ -219,9 +220,13 @@ The output would look like this -
     Type :help for more information.
 
     scala>
-
-    Check Tensorflow installation by the following command
-    #pip show tensorflow
+```
+Check Tensorflow installation by the following command
+```    
+    $ pip show tensorflow
+```  
+The output should look as:
+```
     Name: tensorflow
     Version: 2.1.0
     Summary: TensorFlow is an open source machine learning framework for everyone.
