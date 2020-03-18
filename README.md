@@ -44,7 +44,7 @@ To install the CloudianHyperstore, follow the **CloudianHyperStore Install Guide
 To create a kubernetes cluster in the CentOS environment, you need to install some basic setup on every node.
 
 * Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster.
-* Perform Step 8 only on the master node.
+* Perform Step 8 to Step 10 on the master node.
 
 ### Step 1: Configure Kubernetes Repository
 
