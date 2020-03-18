@@ -10,7 +10,7 @@ Check the minimum requirements section.
 
 The overall high level installation steps -
 
-1. Install CentOS 7.2 (preferably with Cloudian ISO)
+1. Install CentOS 7.6 (preferably with Cloudian ISO)
 2. Install HyperStore
 3. Install Kubernetes
 4. Install Hap-Operator
@@ -37,7 +37,7 @@ Maximum Tiered Storage: 10TB
 Object Lock Mode: Enabled
 ```
 
-To install the ClodianHyperstore, follow the **CloudianHyperStore Install Guide** instructions that you will find in the **docs/** inside the package you have downloaded. In case it is missing, the same install guide is provided in the [docs](https://github.com/cloudian/hap-operator/tree/master/docs) with this repo.
+To install the CloudianHyperstore, follow the **CloudianHyperStore Install Guide** instructions that you will find in the **docs/** inside the package you have downloaded. In case it is missing, the same install guide is provided in the [docs](https://github.com/cloudian/hap-operator/tree/master/docs) with this repo.
 
 ## Install Kubernetes
 
