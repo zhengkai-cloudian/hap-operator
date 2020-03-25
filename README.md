@@ -143,8 +143,6 @@ NOTE: Perform following steps only on the node you wish to make a master node fo
 Execute following series of commands as `root` to create kubernetes cluster.
 
 ```
-touch kubeMasterOutput.txt
-
 # init will pull the images
 kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address <IP-Address-of-your-node> --ignore-preflight-errors=NumCPU
 ```
