@@ -2,9 +2,31 @@
 
 ## Overview
 
+This documents demonstrates the practical steps to create single and multi-node installation of Cloudian HyperStore, create kubernetes cluster and run HAP operator init.
+
+Before you start, **you should have all your nodes or VMs build with Cloudian provided ISOs**. If you want to use your own ISO, makes sure following are turned off or disabled permanently. Cloudian ISOs are already preconfigured with these setting though.  
+```
+1. Firewall
+2. SELinux
+3. Iptables
+```
+To disable the Firewall -
+```
+sudo systemctl stop firewalld
+sudo systemctl disable firewalld
+```
+To disable SELinux -
+```
+sudo setenforce 0
+```
+Starting with CentOS 7, FirewallD replaces iptables as the default firewall management tool. So after disabling firewall, iptables should also of turned off. To disable Iptables -
+```
+sudo iptables -F
+```
+
 ## Prerequisites
 
-Check the minimum requirements section.
+Check the minimum requirement sections.
 
 ## Installation Steps In-Brief
 
@@ -41,10 +63,11 @@ To install the CloudianHyperstore, follow the **CloudianHyperStore Install Guide
 
 ## Install Kubernetes
 
-To create a kubernetes cluster in the CentOS environment, you need to install some basic setup on every node.
+To create a kubernetes cluster in the CentOS environment, you need to configure some basic setup on every node.
 
-* Perform Step 1 to Step 7 on every node that you wish to add into the kubernetes cluster.
-* Perform Step 8 to Step 10 on the master node.
+* Perform **Step 1 to Step 7 on each node** that you wish to add into the kubernetes cluster.
+* Perform **Step 8 to Step 11 on the master node**.
+* Perform **Step 12 on master node only if you have single node cluster**.
 
 ### Step 1: Configure Kubernetes Repository
 
@@ -64,53 +87,55 @@ EOF
 
 Install, enable and start docker.
 ```
-$ sudo yum install -y docker
-$ sudo systemctl enable docker && sudo systemctl start docker
+sudo yum install -y docker
+sudo systemctl enable docker
+sudo systemctl start docker
 ```
 Also, verify that docker version is 1.12 and greater.
 
-### Step 3: Disable the SELinux and Firewall
+### Step 3: Make sure the SELinux and Firewall are disabled
 
-The containers need to access the host filesystem. SELinux needs to be set to permissive mode, which effectively disables its security functions. If you already have the HyperStore running, that means you've has already disabled and you can ignore this step.
+The containers need to access the host filesystem. SELinux needs to be set to permissive mode, which effectively disables its security functions. If you already have the HyperStore running, that means you've has already disabled. You can cofirm it by runnign following steps -
 ```
-# disable SELinux
-$ sudo setenforce 0
+# check SELinux
+sudo getenforce
 
-# stop firewall
-$ sudo systemctl stop firewalld
-$ sudo systemctl disable firewalld
+# check firewall
+sudo firewall-cmd --state
 ```
+If you find that one of these are running, please go through the overview section once.
 
 ### Step 4: Install kubernetes component
 
 Install kubeadm, kubelet and kubectl on CentOS.
 ```
-$ sudo yum install -y kubelet kubeadm kubectl
+sudo yum install -y kubelet kubeadm kubectl
 ```
 
 ### Step 5: Update Iptables Settings
 
 Set the net.bridge.bridge-nf-call-iptables to ‘1’ in your sysctl config file. This ensures that packets are properly processed by IP tables during filtering and port forwarding.
 ```
-$ cat <<EOF >  /etc/sysctl.d/k8s.conf
+cat <<EOF >  /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward=1
 EOF
 
-$ sudo sysctl --system
+sudo sysctl --system
 ```
 
 ### Step 6: Disable SWAP
 
 Lastly disable the SWAP to enable kubernetes to work properly:
 ```
-$ sudo swapoff -a
+sudo swapoff -a
 ```
 
-### Step 7: Enable kubelet and start kubelete as process
+### Step 7: Enable kubelet and start kubelet as process
 ```
-sudo systemctl enable kubelet && sudo systemctl start kubelet
+sudo systemctl enable kubelet
+sudo systemctl start kubelet
 ```
 
 NOTE: Perform following steps only on the node you wish to make a master node for Kubernetes Cluster
@@ -120,11 +145,10 @@ NOTE: Perform following steps only on the node you wish to make a master node fo
 Execute following series of commands as `root` to create kubernetes cluster.
 
 ```
-$ ls /etc/kubernetes/admin.conf && mv /etc/kubernetes/admin.conf.bak
-$ touch kubeMasterOutput.txt
-# kubeadm config images pull
+touch kubeMasterOutput.txt
+
 # init will pull the images
-$ kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address <IP-Address-of-your-node> --ignore-preflight-errors=NumCPU
+kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address <IP-Address-of-your-node> --ignore-preflight-errors=NumCPU
 ```
 This will generate a `kubeadm join` message in following format -
 ```
@@ -147,8 +171,20 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ### Step 10: Check cluster status
 
 ```
-$ kubectl cluster-info  #to check the cluster status.
-$ kubectl get nodes     #to confirm that nodes worker nodes have joined the cluster.
+kubectl cluster-info  #to check the cluster status.
+kubectl get nodes     #to confirm that nodes worker nodes have joined the cluster.
+```
+
+### Step 11: Install pod network add-on `Calico` on Kubernetes
+```
+kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
+```
+
+### Step 12: Create Single Node Cluster
+
+This creates a single node kubernetes cluster. Therefore run this step only if you wish to have a single node kubernetes cluster where master also works as worker. By default, the pod will not be scheduled on master. To make master schedule the pod(s)
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
 ## Setup for Operator
