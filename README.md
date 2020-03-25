@@ -4,6 +4,15 @@
 
 This documents demonstrates the practical steps to create single and multi-node installation of Cloudian HyperStore, create kubernetes cluster and run HAP operator init.
 
+## Installation Steps In-Brief
+
+The overall high level installation steps -
+
+1. Install CentOS 7.6 (preferably with Cloudian ISO)
+2. Install HyperStore
+3. Install Kubernetes
+4. Install Hap-Operator
+
 ## Prerequisites
 
 Before you start, **you should have all your nodes or VMs build with Cloudian provided ISOs**. If you want to use your own ISO, makes sure following are turned off or disabled permanently. Cloudian ISOs are already preconfigured with these setting though.  
@@ -25,15 +34,6 @@ Starting with CentOS 7, FirewallD replaces iptables as the default firewall mana
 ```
 sudo iptables -F
 ```
-
-## Installation Steps In-Brief
-
-The overall high level installation steps -
-
-1. Install CentOS 7.6 (preferably with Cloudian ISO)
-2. Install HyperStore
-3. Install Kubernetes
-4. Install Hap-Operator
 
 ## HyperStore Installation Introduction
 
