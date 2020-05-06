@@ -170,6 +170,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl cluster-info  #to check the cluster status.
 kubectl get nodes     #to confirm that nodes worker nodes have joined the cluster.
 ```
+If after running command `kubectl get nodes` shows anyof your node-status as **NotReady**, please wait for some time as the required images are still being pulled. Meanwhile you may want to check your nodes using `kubectl describe your-node-name`.
 
 ### Step 11: Install pod network add-on `Calico` on Kubernetes
 ```
