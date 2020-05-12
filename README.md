@@ -281,6 +281,25 @@ $ kubectl get pods
 ```
 You should see a new pod up and running
 
+### Run ML Applications in Jupyter
+
+1. Note the IP address of the node where the pod is running from the following command
+```
+  $ kubectl describe pod example-hapcontainer-happod
+```
+2. Note the node port of the service where the application is running from the following command
+```
+  $ kubectl describe service example-hapcontainer-hapservice
+```
+3. Type the IP address along with port in the browser to view Jupyter notebook
+
+4. Login with password "root" to view the applications MaskClassifier and FacialRecognitionUnmasked
+
+5. Existing Python code in the directory can be run by creating a notebook and executing the following command
+
+```
+    %run -i <ProgramName>
+```
 ### Cleaning up the resources
 
 Use the following command to delete all the resources created
