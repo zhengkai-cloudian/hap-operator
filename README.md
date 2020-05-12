@@ -195,7 +195,7 @@ Follow the steps to install and configure Operator on master node of Kubernetes 
 
 The following commands install the CRD, set permissions for controller to access Kubernetes API and help in deploying the operator.
 ```
-  $ kubectl apply -f deploy/crds/cloudian.com_hapcontainers_crd.yaml
+  $ kubectl apply -f deploy/crds/hap.cloudian.com_hapcontainers_crd.yaml
   $ kubectl apply -f deploy/service_account.yaml
   $ kubectl apply -f deploy/role.yaml
   $ kubectl apply -f deploy/role_binding.yaml
@@ -205,7 +205,7 @@ The following commands install the CRD, set permissions for controller to access
 4. The following command creates hapcontainer object in the cluster -
 
 ```
-$ kubectl apply -f deploy/crds/cloudian.com_v1_hapcontainer_cr.yaml
+$ kubectl apply -f deploy/crds/hap.cloudian.com_v1alpha1_hapcontainer_cr.yaml
 ```
 
 5. We can verify if the operator pod and pod with the image is running by the following command
@@ -288,7 +288,7 @@ Use the following command to delete all the resources created
   $ kubectl delete -f deploy/service_account.yaml
   $ kubectl delete -f deploy/role.yaml
   $ kubectl delete -f deploy/role_binding.yaml
-  $ kubectl delete -f deploy/crds/cloudian.com_hapcontainers_crd.yaml
+  $ kubectl delete -f deploy/crds/hap.cloudian.com_hapcontainers_crd.yaml
   $ kubectl delete -f deploy/operator.yaml
-  $ kubectl delete -f deploy/crds/cloudian.com_v1_hapcontainer_cr.yaml
+  $ kubectl delete -f deploy/crds/hap.cloudian.com_v1alpha1_hapcontainer_cr.yaml
 ```
