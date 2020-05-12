@@ -7,6 +7,8 @@ spec:
   selector:
     matchLabels:
       name: hap-operator
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -22,7 +24,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
-              valueFrom:
+              valueFrom: ""
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: POD_NAME

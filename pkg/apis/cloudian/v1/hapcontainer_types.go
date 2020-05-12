@@ -12,7 +12,7 @@ type HapContainerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
-        
+
         // +kubebuilder:validation:MinLength=1
         Image string `json:"image"`
 }
@@ -29,6 +29,7 @@ type HapContainerStatus struct {
 // HapContainer is the Schema for the hapcontainers API
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:path=hapcontainers,scope=Namespaced
+// + genClient:nonNamespaced 
 type HapContainer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

@@ -9,7 +9,7 @@ spec:
     listKind: HapContainerList
     plural: hapcontainers
     singular: hapcontainer
-  scope: Namespaced
+  scope: Cluster
   subresources:
     status: {}
   validation:
