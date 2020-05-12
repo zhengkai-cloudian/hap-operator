@@ -3,9 +3,10 @@ package hapcontainer
 import (
 	"context"
 
-	cloudianv1 "hap-operator/pkg/apis/cloudian/v1"
+	hapv1alpha1 "hap-operator/pkg/apis/hap/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -47,7 +48,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	}
 
 	// Watch for changes to primary resource HapContainer
-	err = c.Watch(&source.Kind{Type: &cloudianv1.HapContainer{}}, &handler.EnqueueRequestForObject{})
+	err = c.Watch(&source.Kind{Type: &hapv1alpha1.HapContainer{}}, &handler.EnqueueRequestForObject{})
 	if err != nil {
 		return err
 	}
@@ -56,7 +57,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	// Watch for changes to secondary resource Pods and requeue the owner HapContainer
 	err = c.Watch(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestForOwner{
 		IsController: true,
-		OwnerType:    &cloudianv1.HapContainer{},
+		OwnerType:    &hapv1alpha1.HapContainer{},
 	})
 	if err != nil {
 		return err
@@ -83,12 +84,13 @@ type ReconcileHapContainer struct {
 // Note:
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
+			
 func (r *ReconcileHapContainer) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
 	reqLogger.Info("Reconciling HapContainer")
 
-	// Fetch the HapContainer instance
-	instance := &cloudianv1.HapContainer{}
+	// Fetch the ImmortalContainer instance
+	instance := &hapv1alpha1.HapContainer{}
 	err := r.client.Get(context.TODO(), request.NamespacedName, instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -101,53 +103,114 @@ func (r *ReconcileHapContainer) Reconcile(request reconcile.Request) (reconcile.
 		return reconcile.Result{}, err
 	}
 
-	// Define a new Pod object
-	pod := newPodForCR(instance)
-
 	// Set HapContainer instance as the owner and controller
-	if err := controllerutil.SetControllerReference(instance, pod, r.scheme); err != nil {
-		return reconcile.Result{}, err
-	}
 
-	// Check if this Pod already exists
-	found := &corev1.Pod{}
-	err = r.client.Get(context.TODO(), types.NamespacedName{Name: pod.Name, Namespace: pod.Namespace}, found)
+	// Check if the deployment already exists, if not create a new one
+	found := &appsv1.Deployment{}
+	err = r.client.Get(context.TODO(), types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, found)
 	if err != nil && errors.IsNotFound(err) {
-		reqLogger.Info("Creating a new Pod", "Pod.Namespace", pod.Namespace, "Pod.Name", pod.Name)
-		err = r.client.Create(context.TODO(), pod)
+		// create svc
+		svc := r.newServiceForCR(instance)
+		reqLogger.Info("creating service", svc.Name, ", namespace:", svc.Namespace)
+		err = r.client.Create(context.TODO(), svc)
 		if err != nil {
+			reqLogger.Error(err, "Failed to create new service")
+		}
+
+		// Define a new deployment
+		dep := r.deploymentForHapContainer(instance)
+		reqLogger.Info("Creating a new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+		err = r.client.Create(context.TODO(), dep)
+		if err != nil {
+			reqLogger.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
 			return reconcile.Result{}, err
 		}
 
-		// Pod created successfully - don't requeue
-		return reconcile.Result{}, nil
+		// Deployment created successfully - return and requeue
+		return reconcile.Result{Requeue: true}, nil
 	} else if err != nil {
+		reqLogger.Error(err, "Failed to get Deployment")
 		return reconcile.Result{}, err
 	}
 
-	// Pod already exists - don't requeue
-	reqLogger.Info("Skip reconcile: Pod already exists", "Pod.Namespace", found.Namespace, "Pod.Name", found.Name)
+	// Ensure the deployment size is the same as the spec
+	size := instance.Spec.Size
+	if *found.Spec.Replicas != size {
+		found.Spec.Replicas = &size
+		err = r.client.Update(context.TODO(), found)
+		if err != nil {
+			reqLogger.Error(err, "Failed to update Deployment", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
+			return reconcile.Result{}, err
+		}
+		// Spec updated - return and requeue
+		return reconcile.Result{Requeue: true}, nil
+	}
+
 	return reconcile.Result{}, nil
 }
 
-// newPodForCR returns a busybox pod with the same name/namespace as the cr
-func newPodForCR(cr *cloudianv1.HapContainer) *corev1.Pod {
-	labels := map[string]string{
-		"app": cr.Name,
-	}
-	return &corev1.Pod{
+// new Deployment
+func (r *ReconcileHapContainer) deploymentForHapContainer(cr *hapv1alpha1.HapContainer) *appsv1.Deployment {
+	labels := labelsForHapContainer(cr.Name)
+	replicas := cr.Spec.Size
+
+	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cr.Name + "-happod",
 			Namespace: cr.Namespace,
-			Labels:    labels,
 		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:    "cldncontainer",
-					Image:   cr.Spec.Image,
+		Spec: appsv1.DeploymentSpec{
+			Replicas: &replicas,
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: labels,
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{{
+						Image: cr.Spec.Image,
+						Name:  "hapcontainer",
+						Ports: []corev1.ContainerPort{{
+							ContainerPort: 8888,
+							Name:          "immortal",
+						}},
+					}},
 				},
 			},
 		},
 	}
+
+	controllerutil.SetControllerReference(cr, dep, r.scheme)
+	return dep
+
 }
+
+// newPodForCR returns a busybox pod with the same name/namespace as the cr
+func (r *ReconcileHapContainer) newServiceForCR(cr *hapv1alpha1.HapContainer) *corev1.Service {
+	labels := map[string]string{
+		"app": cr.Name,
+	}
+	return &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      cr.Name + "-hapservice",
+			Namespace: cr.Namespace,
+			Labels:    labels,
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: labels,
+			Ports: []corev1.ServicePort{{
+				Protocol: corev1.ProtocolTCP,
+				Port:     8888,
+				Name:     "http",
+			}},
+			Type: corev1.ServiceTypeNodePort,
+		},
+	}
+}
+
+func labelsForHapContainer(name string) map[string]string {
+	return map[string]string{"app": name}
+}
+

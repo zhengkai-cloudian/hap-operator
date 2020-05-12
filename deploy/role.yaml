@@ -67,7 +67,7 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - cloudian.com
+  - hap.cloudian.com
   resources:
   - '*'
   verbs:

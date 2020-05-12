@@ -1,0 +1,8 @@
+apiVersion: hap.cloudian.com/v1alpha1
+kind: HapContainer
+metadata:
+  name: example-hapcontainer
+spec:
+  # Add fields here
+  size: 1
+  image: quay.io/nivethav/hap-spark-tf
