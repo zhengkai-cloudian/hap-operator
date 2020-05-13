@@ -5,4 +5,4 @@ metadata:
 spec:
   # Add fields here
   size: 1
-  image: quay.io/nivethav/hap-spark-tf
+  image: quay.io/cloudian/hap-spark-tf
