@@ -84,7 +84,7 @@ type ReconcileHapContainer struct {
 // Note:
 // The Controller will requeue the Request to be processed again if the returned error is non-nil or
 // Result.Requeue is true, otherwise upon completion it will remove the work from the queue.
-			
+
 func (r *ReconcileHapContainer) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	reqLogger := log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
 	reqLogger.Info("Reconciling HapContainer")
@@ -175,6 +175,9 @@ func (r *ReconcileHapContainer) deploymentForHapContainer(cr *hapv1alpha1.HapCon
 						Ports: []corev1.ContainerPort{{
 							ContainerPort: 8888,
 							Name:          "immortal",
+						}, {
+							ContainerPort: 4040,
+							Name:          "sparkWebUIPort",
 						}},
 					}},
 				},
@@ -204,6 +207,10 @@ func (r *ReconcileHapContainer) newServiceForCR(cr *hapv1alpha1.HapContainer) *c
 				Protocol: corev1.ProtocolTCP,
 				Port:     8888,
 				Name:     "http",
+			}, {
+				Protocol: corev1.ProtocolTCP,
+				Port:     4040,
+				Name:     "spark",
 			}},
 			Type: corev1.ServiceTypeNodePort,
 		},
@@ -213,4 +220,3 @@ func (r *ReconcileHapContainer) newServiceForCR(cr *hapv1alpha1.HapContainer) *c
 func labelsForHapContainer(name string) map[string]string {
 	return map[string]string{"app": name}
 }
-
