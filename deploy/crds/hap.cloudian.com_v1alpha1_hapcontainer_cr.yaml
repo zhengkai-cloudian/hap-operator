@@ -5,6 +5,5 @@ metadata:
 spec:
   # Add fields here
   size: 1
-  image: quay.io/cloudian/hap-spark-tf:1.0.0
+  image: quay.io/cloudian/hap-spark-tf:0.0.1
   imagePullPolicy: IfNotPresent
-  
