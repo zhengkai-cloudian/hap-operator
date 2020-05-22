@@ -7,3 +7,13 @@ spec:
   size: 1
   image: quay.io/cloudian/hap-spark-tf:0.0.1
   imagePullPolicy: IfNotPresent
+  env:
+    - name: ENDPOINT
+      value: "http://s3-region0.cloudian.com:80"
+    - name: REGION
+      value: "region0"
+    - name: ACCESS_KEY
+      value: "0098f8bc912a40ead221"
+    - name: SECRET_KEY
+      value: "ox5aGKU3cQ1SafTqkixGgJBBSniOB9Ul4Muo9Gh3"
+      

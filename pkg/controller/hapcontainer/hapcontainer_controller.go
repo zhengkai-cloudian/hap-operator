@@ -177,7 +177,7 @@ func (r *ReconcileHapContainer) deploymentForHapContainer(cr *hapv1alpha1.HapCon
 							Name:          "immortal",
 						}, {
 							ContainerPort: 4040,
-							Name:          "sparkWebUIPort",
+							Name:          "spark",
 						}},
 					}},
 				},
