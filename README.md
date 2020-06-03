@@ -306,7 +306,20 @@ You should see a new pod up and running
 ```
   $ kubectl exec -it example-hapcontainer-happod -- /bin/bash
 ```
-2. Run spark-submit for your application
+2. Scp data into the pod 
+```
+  $ kubectl cp <file-spec-src> <file-spec-dest> -c <specific-container>
+```
+Example 1: Copy /tmp/foo local file to /tmp/bar in a remote pod in namespace 
+```
+  $ kubectl cp /tmp/foo <some-namespace>/<some-pod>:/tmp/bar
+```
+Example 2: Copy /tmp/foo from a remote pod to /tmp/bar locally
+```
+  $ kubectl cp <some-namespace>/<some-pod>:/tmp/foo /tmp/bar
+```
+
+3. Run spark-submit for your application
 ```
   $ spark-submit \
     --master local[*] \
@@ -316,13 +329,13 @@ You should see a new pod up and running
 ```
 here `*` controls the number of cores allocation to the application
 
-3. Access spark webUI
+4. Access spark webUI
 ```
   $ kubectl get svc
 ```
 Use the noteport exposed in mapping with node `4040` and access spark UI at `node-ip:nodeport` in your browser. Ex `10.10.3.72:31665` where `31665` is nodeport service for `4040`.
 
-4. To create and access UI, deploy Presto on kubernetes from [presto-on-k8s](https://github.com/cloudian/presto-on-k8s) 
+5. To create and access UI, deploy Presto on kubernetes from [presto-on-k8s](https://github.com/cloudian/presto-on-k8s) 
 
 
 ## Cleaning up the resources
