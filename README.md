@@ -300,7 +300,32 @@ You should see a new pod up and running
 ```
     %run -i <ProgramName>
 ```
-### Cleaning up the resources
+### Run Spark Applications in container
+
+1. Start the container shell 
+```
+  $ kubectl exec -it example-hapcontainer-happod -- /bin/bash
+```
+2. Run spark-submit for your application
+```
+  $ spark-submit \
+    --master local[*] \
+    --deploy-mode client \
+    --class com.cloudian.hap.qct.AirDetection \
+    applications/hap-air-detection/target/scala-2.11/qct-air-detection-assembly-0.1.jar
+```
+here `*` controls the number of cores allocation to the application
+
+3. Access spark webUI
+```
+  $ kubectl get svc
+```
+Use the noteport exposed in mapping with node `4040` and access spark UI at `node-ip:nodeport` in your browser. Ex `10.10.3.72:31665` where `31665` is nodeport service for `4040`.
+
+4. To create and access UI, deploy Presto on kubernetes from [presto-on-k8s](https://github.com/cloudian/presto-on-k8s) 
+
+
+## Cleaning up the resources
 
 Use the following command to delete all the resources created
 ```
