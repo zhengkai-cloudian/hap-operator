@@ -337,6 +337,10 @@ Use the noteport exposed in mapping with node `4040` and access spark UI at `nod
 
 5. To create and access UI, deploy Presto on kubernetes from [presto-on-k8s](https://github.com/cloudian/presto-on-k8s) 
 
+### Creating Air Detection UI:
+Air Detection UI consists of PrestoSql query engine and Redash dashboard. Presto needs a hive metastore to store the metadata for the tables and data stored on S3 buckets. 
+
+![Presto-S3 Setup Logical View Architecture](https://github.com/cloudian/hap-operator/blob/master/images/PrestoSql.jpeg)
 
 ## Cleaning up the resources
 
