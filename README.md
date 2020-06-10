@@ -342,6 +342,18 @@ Air Detection UI consists of PrestoSql query engine and Redash dashboard. Presto
 
 ![Presto-S3 Setup Logical View Architecture](https://github.com/cloudian/hap-operator/blob/master/images/PrestoSql.jpeg)
 
+### Architecture explained:
+
+In order for Presto to query data on S3, it relies on the Hive Metastore. Therefore, we first configure a Hive Standalone Metastore and then separately the Presto servers. Presto and Hive do not make copy of S3 data, they only create pointers enabling performant queries.
+
+**Component 1: RDBMS for Metastore:** Hive Metastore is the external table, a common tool that connects an existing dataset on S3 without requiring ingestion into the data warehouse, instead querying the data in-place.  backed by a MariaDB container with kubernetes persistent volume. An initschema is important to be run once during initial setup of the backing database. Hive library has schematool already setupinside the docker image for this process. 
+
+**Component 2: Standalong Hive Metastore:** This uses mysql and hadoop libraries for s3a connections by setting configurations related to S3 into core-site.xml file and mysql mariadb into metastore-site.xml.
+
+**Component 3: Presto Servers:** Presto works in a cluster of coordinator and workers. Both coord and worker nodes are connected to S3 via hive.properties file that controls connectivity to S3.
+
+**Component 4: Redash:** Redash is an open-source UI for creating SQL queries and dashboards against Presto. 
+
 ## Cleaning up the resources
 
 Use the following command to delete all the resources created
