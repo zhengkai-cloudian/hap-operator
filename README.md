@@ -2,86 +2,68 @@
 
 ## Overview
 
-This documents demonstrates the practical steps to create single and multi-node installation of Cloudian HyperStore, create kubernetes cluster and run HAP operator init.
+Hap Operator runs on a kubernetes cluster. This documents demonstrates the practical steps to create single and multi-node installation of kubernetes cluster and running HAP operator.
+
+*Hap Operator expects to have a Cloudian Hyperstore installed and running* as the applications intended to run inside the HAP Operator (and on kubernetes cluster) may use Cloudian Hyperstore services such as S3 for storing the data. You can follow the official [installation guide]((https://github.com/cloudian/hap-operator/tree/master/docs)) to install Cloudian Hyperstore.
 
 ## Installation Steps In-Brief
 
 The overall high level installation steps -
 
-1. Install CentOS 7.6 (preferably with Cloudian ISO)
-2. Install HyperStore
-3. Install Kubernetes
-4. Install Hap-Operator
+1. Install CentOS (preferably with Cloudian ISO)
+2. Create Kubernetes Cluster
+3. Deploy Hap-Operator
 
 ## Prerequisites
 
-Before you start, **you should have all your nodes or VMs build with Cloudian provided ISOs**. If you want to use your own ISO, makes sure following are turned off or disabled permanently. Cloudian ISOs are already preconfigured with these setting though.  
-```
-1. Firewall
-2. SELinux
-3. Iptables
-```
-To disable the Firewall -
+Before you start, *you should have all your nodes built with Cloudian provided ISOs*. If you want to use your own ISO, makes sure following are turned off or disabled permanently. Cloudian ISOs are already preconfigured with these setting though.  
+
+1. Disable Firewall
+2. Disable SELinux
+3. Disable Iptables
+
 ```
 sudo systemctl stop firewalld
 sudo systemctl disable firewalld
-```
-To disable SELinux -
-```
 sudo setenforce 0
 ```
-Starting with CentOS 7, FirewallD replaces iptables as the default firewall management tool. So after disabling firewall, iptables should also of turned off. To disable Iptables -
+Starting with CentOS 7, FirewallD replaces iptables as the default firewall management tool. So after disabling firewall, iptables should also be turned off. To disable Iptables -
 ```
 sudo iptables -F
 ```
 
-## HyperStore Installation Introduction
+## Install CentOS
 
-If you do not yet have the HyperStore package, you can obtain it from the Cloudian FTP site ftp.cloudian.com. You will need a login ID and password (available from Cloudian Support). Once logged into the FTP site, change into the Cloudian_HyperStore directory and then into the cloudian-7.2 sub-directory. From there you can download the HyperStore software package, which is named `CloudianHyperStore-7.2.bin`.
+If you have performed the installation of Cloudian Hyperstore, you may already have created at least a single node with Cloudian provided ISO of CentOS and can skip to [Install Kubernetes](https://github.com/cloudian/hap-operator#install-kubernetes). You may also choose your own choice of Linux. 
 
-To install and run HyperStore software you need a HyperStore license file usually found in **CloudianPackage/** directory.
+You need atleast single node to create kubernetes cluster. It is a good practice to have at least 3 nodes/VMs to create a stable kubernetes cluster.
 
-**NOTE** If you do not have the license file yet, please Send an email to cloudian-license@cloudian.com With the following parameters:
-
-```
-Net Storage:
-Expiration:
-Maximum Tiered Storage:
-Object Lock Mode:
-```
-For example:
-```
-Net Storage: 50 TB
-Expiration: 2 Years
-Maximum Tiered Storage: 10TB
-Object Lock Mode: Enabled
-```
-
-To install the CloudianHyperstore, follow the **CloudianHyperStore Install Guide** instructions that you will find in the **docs/** inside the package you have downloaded. In case it is missing, the same install guide is provided in the [docs](https://github.com/cloudian/hap-operator/tree/master/docs) with this repo.
+Hap Operator is designed to run parallely on the same node with your hyperstore. Therefore, choose one of the node in your Cloudian Hyperstore cluster as master node to create kubernetes cluster. 
 
 ## Install Kubernetes
 
 To create a kubernetes cluster in the CentOS environment, you need to configure some basic setup on every node.
 
-* Perform **Step 1 to Step 7 on each node** that you wish to add into the kubernetes cluster.
-* Perform **Step 8 to Step 11 on the master node**.
-* Perform **Step 12 on master node only if you have single node cluster**.
+* **Step 1 to 7 on every node** 
+* **Step 8 to 11 only on master node**
+* **Step 12 on master node if you have single node cluster**
 
 ### Step 1: Configure Kubernetes Repository
 
 Kubernetes packages are not available from official CentOS 7 repositories. This step needs to be performed on the Master Node, and each Worker Node you plan on utilizing for your container setup. Enter the following command to retrieve the Kubernetes repositories.
 ```
-$ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
 enabled=1
 gpgcheck=1
 repo_gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg 
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
 ```
-### Step 2: Docker installation
+### Step 2: Install Docker
 
 Install, enable and start docker.
 ```
@@ -89,11 +71,14 @@ sudo yum install -y docker
 sudo systemctl enable docker
 sudo systemctl start docker
 ```
-Also, verify that docker version is 1.12 and greater.
+Also, verify that docker version is 1.12 and greater using 
+```
+docker version
+```
 
 ### Step 3: Make sure the SELinux and Firewall are disabled
 
-The containers need to access the host filesystem. SELinux needs to be set to permissive mode, which effectively disables its security functions. If you already have the HyperStore running, that means you've has already disabled. You can cofirm it by runnign following steps -
+The containers need to access the host filesystem. SELinux needs to be set to permissive mode, which effectively disables its security functions. If you already have the HyperStore running, that means you've has already disabled and skips this step. You can cofirm it by runnign following steps -
 ```
 # check SELinux
 sudo getenforce
@@ -101,7 +86,7 @@ sudo getenforce
 # check firewall
 sudo firewall-cmd --state
 ```
-If you find that one of these are running, please go through the overview section once.
+If you find that one of these are running, please go through the [Overview](https://github.com/cloudian/hap-operator#prerequisites) section once.
 
 ### Step 4: Install kubernetes component
 
@@ -130,18 +115,15 @@ Lastly disable the SWAP to enable kubernetes to work properly:
 sudo swapoff -a
 ```
 
-### Step 7: Enable kubelet and start kubelet as process
+### Step 7: Enable & Start kubelet 
 ```
 sudo systemctl enable kubelet
 sudo systemctl start kubelet
 ```
 
-NOTE: Perform following steps only on the node you wish to make a master node for Kubernetes Cluster
-
 ### Step 8: Create cluster with kubeadm
 
 Execute following series of commands as `root` to create kubernetes cluster.
-
 ```
 # init will pull the images
 kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address <IP-Address-of-your-node> --ignore-preflight-errors=NumCPU
@@ -172,14 +154,14 @@ kubectl get nodes     #to confirm that nodes worker nodes have joined the cluste
 ```
 If after running command `kubectl get nodes` shows anyof your node-status as **NotReady**, please wait for some time as the required images are still being pulled. Meanwhile you may want to check your nodes using `kubectl describe your-node-name`.
 
-### Step 11: Install pod network add-on `Calico` on Kubernetes
+### Step 11: Install pod network on Kubernetes cluster
 ```
-kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
+sudo kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
 ```
 
-### Step 12: Create Single Node Cluster
+### Step 12: Run To Create Single Node Cluster
 
-This creates a single node kubernetes cluster. Therefore run this step only if you wish to have a single node kubernetes cluster where master also works as worker. By default, the pod will not be scheduled on master. To make master schedule the pod(s)
+This creates a single node kubernetes cluster. Therefore run this step only if you wish to have a single node kubernetes cluster where master also works as worker. By default, the pod will not be scheduled on master. To make master schedule the pod(s) -
 ```
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
@@ -195,11 +177,11 @@ Follow the steps to install and configure Operator on master node of Kubernetes 
 
 The following commands install the CRD, set permissions for controller to access Kubernetes API and help in deploying the operator.
 ```
-  $ kubectl apply -f deploy/crds/hap.cloudian.com_hapcontainers_crd.yaml
-  $ kubectl apply -f deploy/service_account.yaml
-  $ kubectl apply -f deploy/role.yaml
-  $ kubectl apply -f deploy/role_binding.yaml
-  $ kubectl apply -f deploy/operator.yaml
+  kubectl apply -f deploy/crds/hap.cloudian.com_hapcontainers_crd.yaml
+  kubectl apply -f deploy/service_account.yaml
+  kubectl apply -f deploy/role.yaml
+  kubectl apply -f deploy/role_binding.yaml
+  kubectl apply -f deploy/operator.yaml
 ```
 
 4. The following command creates hapcontainer object in the cluster -
