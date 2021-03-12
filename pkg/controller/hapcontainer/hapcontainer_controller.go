@@ -5,8 +5,8 @@ import (
 
 	hapv1alpha1 "hap-operator/pkg/apis/hap/v1alpha1"
 
-	corev1 "k8s.io/api/core/v1"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -149,7 +149,7 @@ func (r *ReconcileHapContainer) Reconcile(request reconcile.Request) (reconcile.
 	return reconcile.Result{}, nil
 }
 
-// new Deployment
+// deployment that returns a deployment object
 func (r *ReconcileHapContainer) deploymentForHapContainer(cr *hapv1alpha1.HapContainer) *appsv1.Deployment {
 	labels := labelsForHapContainer(cr.Name)
 	replicas := cr.Spec.Size
@@ -184,7 +184,7 @@ func (r *ReconcileHapContainer) deploymentForHapContainer(cr *hapv1alpha1.HapCon
 			},
 		},
 	}
-
+	// Set this instance as the owner and controller
 	controllerutil.SetControllerReference(cr, dep, r.scheme)
 	return dep
 

@@ -70,6 +70,32 @@ rules:
   - hap.cloudian.com
   resources:
   - '*'
+  - hscoperators
+  - hfsoperators
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - hsc-operator.cloudian.com
+  resources:
+  - '*'
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - hfs-operator.cloudian.com
+  resources:
+  - '*'
   verbs:
   - create
   - delete

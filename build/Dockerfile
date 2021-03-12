@@ -1,4 +1,5 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+# FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+FROM golang:1.15.6-alpine3.12 as go
 
 ENV OPERATOR=/usr/local/bin/hap-operator \
     USER_UID=1001 \
