@@ -1,7 +1,0 @@
-apiVersion: hfs-operator.cloudian.com/v1alpha1
-kind: HapOperator
-metadata:
-  name: example-hapoperator
-spec:
-  # Add fields here
-  size: 3

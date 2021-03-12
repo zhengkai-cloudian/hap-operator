@@ -16,7 +16,7 @@ spec:
       containers:
         - name: hap-operator
           # Replace this with the built image name
-          image: anirtek/hap-operator
+          image: quay.io/cloudian/hap-operator
           command:
           - hap-operator
           imagePullPolicy: Always
