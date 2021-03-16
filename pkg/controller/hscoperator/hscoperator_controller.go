@@ -20,6 +20,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
+var OperatorName = "HAP_OPERARTOR"
 var log = logf.Log.WithName("controller_hscoperator")
 
 /**
