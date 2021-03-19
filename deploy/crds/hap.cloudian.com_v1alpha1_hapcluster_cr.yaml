@@ -1,0 +1,11 @@
+apiVersion: hap.cloudian.com/v1alpha1
+kind: HapCluster
+metadata:
+  name: example-hapcluster
+spec:
+  # Add fields here
+  size: 3
+  image: 
+  pluginList:
+  - hsc
+  - hfs
