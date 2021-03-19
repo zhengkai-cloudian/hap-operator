@@ -141,7 +141,6 @@ data:
 kind: Secret
 metadata:
   name: 'hyperstore-regcred'
-  namespace: 'cloudian'
 type: kubernetes.io/dockerconfigjson
 ---
 apiVersion: apps/v1
@@ -162,7 +161,7 @@ spec:
       containers:
         - name: hap-operator
           # Replace this with the built image name
-          image: quay.io/cloudian/hap-operator
+          image: quay.io/cloudian/hap-operator:latest
           command:
           - hap-operator
           imagePullPolicy: Always
